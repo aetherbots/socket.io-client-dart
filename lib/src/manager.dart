@@ -32,6 +32,7 @@ class Manager extends EventEmitter {
   num _reconnectionDelay;
   num _randomizationFactor;
   num _reconnectionDelayMax;
+  num _reconnectionFactor;
   num _timeout;
   _Backoff backoff;
   String readyState;
@@ -60,10 +61,12 @@ class Manager extends EventEmitter {
     reconnectionDelay = options['reconnectionDelay'] ?? 1000;
     reconnectionDelayMax = options['reconnectionDelayMax'] ?? 5000;
     randomizationFactor = options['randomizationFactor'] ?? 0.5;
+    reconnectionFactor = options['reconnectionFactor'] ?? 2;
     backoff = _Backoff(
         min: reconnectionDelay,
         max: reconnectionDelayMax,
-        jitter: randomizationFactor);
+        jitter: randomizationFactor,
+        factor: reconnectionFactor);
     timeout = options['timeout'] ?? 20000;
     readyState = 'closed';
     this.uri = uri;
@@ -159,6 +162,12 @@ class Manager extends EventEmitter {
   set reconnectionDelayMax(num v) {
     _reconnectionDelayMax = v;
     if (backoff != null) backoff.max = v;
+  }
+
+  num get reconnectionFactor => _reconnectionFactor;
+  set reconnectionFactor(num v) {
+    _reconnectionFactor = v;
+    if (backoff != null) backoff.factor = v;
   }
 
   ///
@@ -536,7 +545,7 @@ class Manager extends EventEmitter {
 class _Backoff {
   num _ms;
   num _max;
-  final num _factor;
+  num _factor;
   num _jitter;
   num attempts;
 
@@ -588,6 +597,13 @@ class _Backoff {
   /// @api public
   ///
   set max(max) => _max = max;
+
+  ///
+  /// Set the factor
+  ///
+  /// @api public
+  ///
+  set factor(factor) => _factor = factor;
 
   ///
   /// Set the jitter
