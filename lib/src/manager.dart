@@ -547,6 +547,7 @@ class _Backoff {
   num _max;
   num _factor;
   num _jitter;
+  num lastDuration;
   num attempts;
 
   _Backoff({min = 100, max = 10000, jitter = 0, factor = 2})
@@ -572,7 +573,9 @@ class _Backoff {
     }
     // #39: avoid an overflow with negative value
     ms = math.min(ms, _max);
-    return ms <= 0 ? _max : ms;
+    var lastDuration = ms <= 0 ? _max : ms;
+    this.lastDuration = lastDuration;
+    return lastDuration;
   }
 
   ///
@@ -582,6 +585,7 @@ class _Backoff {
   ///
   void reset() {
     attempts = 0;
+    lastDuration = 0;
   }
 
   ///
