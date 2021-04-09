@@ -470,7 +470,7 @@ class Manager extends EventEmitter {
       reconnecting = false;
     } else {
       var delay = backoff!.duration;
-      _logger.fine('will wait %dms before reconnect attempt', delay);
+      _logger.fine('will wait ${delay}ms before reconnect attempt');
 
       reconnecting = true;
       var timer = Timer(Duration(milliseconds: delay.toInt()), () {
